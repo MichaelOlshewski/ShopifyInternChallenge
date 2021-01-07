@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 const ResultsBox = (props) => {
     let moviesArr;
@@ -9,8 +10,30 @@ const ResultsBox = (props) => {
         moviesArr = props.movies;
     }
 
-    console.log('Movies Array');
-    console.log(moviesArr);
+    let nominatedMovies = [];
+
+    const saveToLocalStorage = (e) => {
+        const movieName = e.target.parentElement.innerText.replace(
+            'Nominate',
+            ''
+        );
+        movieName.split(',');
+        if (!movieName) {
+            return 'Movie name is empty';
+        } else {
+            movieName.replace(',', '');
+            nominatedMovies.push(movieName);
+            localStorage.setItem('savedMovies', nominatedMovies);
+        }
+    };
+
+    const getLocalStorage = () => {
+        nominatedMovies.push(localStorage.getItem('savedMovies'));
+    };
+
+    useEffect(() => {
+        getLocalStorage();
+    });
 
     return (
         <div className='card'>
@@ -20,15 +43,21 @@ const ResultsBox = (props) => {
                 {moviesArr
                     ? moviesArr.map((movie) => {
                           return (
-                              <li key={movie.imdbID}>
+                              <motion.li
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.2 }}
+                                  key={movie.imdbID}
+                              >
                                   {movie.Title + ' (' + movie.Year + ')'}
                                   <button
                                       key={movie.imdbID}
                                       className='btn btn-outline-primary'
+                                      onClick={saveToLocalStorage}
                                   >
                                       Nominate
                                   </button>
-                              </li>
+                              </motion.li>
                           );
                       })
                     : 'Please search for a movie!'}
