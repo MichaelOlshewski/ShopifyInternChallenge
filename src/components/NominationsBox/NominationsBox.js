@@ -9,40 +9,31 @@ const NominationsBox = () => {
     let nominatedMovies = [];
 
     if (localStorage.getItem('savedMovies')) {
-        nominatedMovies = localStorage
-            .getItem('savedMovies')
-            .replace(',', '')
-            .split(',');
+        nominatedMovies = localStorage.getItem('savedMovies').split(',');
     }
 
     const removeFromLocalStorage = (e) => {
-        const movieName = e.target.parentElement.innerText.replace(
-            'Remove',
-            ''
-        );
-        const index = nominatedMovies.indexOf(movieName);
+        const movieNameIndex =
+            e.target.parentElement.getAttribute('data-index') - 1;
 
-        if (index !== -1) {
-            nominatedMovies.splice(index, 1);
+        if (movieNameIndex !== -1) {
+            nominatedMovies.splice(movieNameIndex, 1);
         }
 
         localStorage.setItem('savedMovies', nominatedMovies);
-        nominatedMovies = localStorage.getItem('savedMovies');
-
-        alert(movieName + ' was removed from your nominations');
     };
-    console.log(localStorage.getItem('savedMovies'));
-    console.log(nominatedMovies);
 
     return (
         <div className='card'>
             <h3>Nominations</h3>
             <ul className='nominationList'>
-                {nominatedMovies.map((movie) => {
+                {nominatedMovies.map((movie, index) => {
+                    index = index + 1;
                     return (
-                        <li key={movie}>
+                        <li key={movie} data-index={index}>
                             {movie}
                             <button
+                                key={index}
                                 className='btn btn-outline-primary'
                                 onClick={removeFromLocalStorage}
                             >
@@ -52,6 +43,8 @@ const NominationsBox = () => {
                     );
                 })}
             </ul>
+            <p>You have {nominatedMovies.length} of 5 nominated movies!</p>
+            <br />
             <button
                 className='btn btn-outline-primary clearStorage'
                 onClick={clearLocalStorage}

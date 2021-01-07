@@ -21,15 +21,17 @@ const ResultsBox = (props) => {
         if (!movieName) {
             return 'Movie name is empty';
         } else {
-            movieName.replace(',', '');
             nominatedMovies.push(movieName);
             localStorage.setItem('savedMovies', nominatedMovies);
         }
     };
 
     const getLocalStorage = () => {
-        nominatedMovies.push(localStorage.getItem('savedMovies'));
+        nominatedMovies = localStorage.getItem('savedMovies').split(',');
     };
+
+    console.log(localStorage.getItem('savedMovies'));
+    console.log(nominatedMovies);
 
     useEffect(() => {
         getLocalStorage();
@@ -41,17 +43,21 @@ const ResultsBox = (props) => {
             <h6>Please nominate up to five (5) films</h6>
             <ul className='resultsList'>
                 {moviesArr
-                    ? moviesArr.map((movie) => {
+                    ? moviesArr.map((movie, index) => {
+                          index = index + 1;
                           return (
                               <motion.li
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
                                   transition={{ delay: 0.2 }}
                                   key={movie.imdbID}
+                                  data-movie={movie.Title}
+                                  data-year={movie.Year}
+                                  data-index={index}
                               >
                                   {movie.Title + ' (' + movie.Year + ')'}
                                   <button
-                                      key={movie.imdbID}
+                                      key={index}
                                       className='btn btn-outline-primary'
                                       onClick={saveToLocalStorage}
                                   >
