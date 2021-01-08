@@ -3,6 +3,7 @@ import './App.css';
 import { FaSearch } from 'react-icons/fa';
 import ResultsBox from './components/ResultsBox/ResultsBox.js';
 import NominationsBox from './components/NominationsBox/NominationsBox.js';
+import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
     const [movies, setMovies] = useState([] || '');
@@ -14,12 +15,12 @@ const App = () => {
             getMovieRequest(searchQuery.value);
             setSearchQuery(searchQuery.value);
         } else {
-            console.log('Search is empty');
+            toast.warn('Please search for a movie!');
         }
     };
 
     const getMovieRequest = async (searchQuery) => {
-        const url = `http://www.omdbapi.com/?apikey=359e2398&s=${searchQuery}&type=movie`;
+        const url = `https://www.omdbapi.com/?apikey=359e2398&s=${searchQuery}&type=movie`;
 
         const response = await fetch(url);
         const responseJson = await response.json();
@@ -29,8 +30,9 @@ const App = () => {
 
     return (
         <div className='App'>
+            <ToastContainer />
             <div className='container'>
-                <h1>The Shoppies</h1>
+                <h1 className='title'>The Shoppies</h1>
                 <div className='card'>
                     <div className='searchForm'>
                         <FaSearch className='searchForm-icon' />

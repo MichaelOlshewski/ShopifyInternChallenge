@@ -103,3 +103,14 @@ body {
     color: #ccc;
     border: 1px solid #ccc;
 }
+
+@media only screen and (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .App .title {
+        text-align: center;
+    }
+}

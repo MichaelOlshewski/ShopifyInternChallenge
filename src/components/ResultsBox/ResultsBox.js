@@ -1,41 +1,69 @@
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ResultsBox = (props) => {
     let moviesArr;
 
     if (!props) {
-        console.log('props are empty');
+        toast.error('There was an error, Please try again!');
     } else {
         moviesArr = props.movies;
     }
 
     let nominatedMovies = [];
 
+    const [moviesArray, setMoviesArray] = useState([]);
+
     const saveToLocalStorage = (e) => {
-        const movieName = e.target.parentElement.innerText.replace(
-            'Nominate',
-            ''
-        );
+        const movieName =
+            e.target.parentElement.getAttribute('data-movie') +
+            ' (' +
+            e.target.parentElement.getAttribute('data-year') +
+            ')';
+
         movieName.split(',');
-        if (!movieName) {
-            return 'Movie name is empty';
+
+        if (nominatedMovies.length >= 5) {
+            toast.warn(
+                'You have used all five (5) of your votes for The Shoppies!'
+            );
         } else {
-            nominatedMovies.push(movieName);
-            localStorage.setItem('savedMovies', nominatedMovies);
+            if (!movieName) {
+                toast.error('Movie cannot be empty');
+            } else {
+                nominatedMovies.push(movieName);
+                localStorage.setItem(
+                    'savedMovies',
+                    JSON.stringify(nominatedMovies)
+                );
+                toast.success(
+                    'You have nominated ' + movieName + ' for The Shoppies!'
+                );
+            }
         }
+        setMoviesArray(moviesArr);
     };
 
     const getLocalStorage = () => {
-        nominatedMovies = localStorage.getItem('savedMovies').split(',');
+        nominatedMovies = JSON.parse(
+            localStorage.getItem('savedMovies') || '[]'
+        );
     };
-
-    console.log(localStorage.getItem('savedMovies'));
-    console.log(nominatedMovies);
 
     useEffect(() => {
         getLocalStorage();
     });
+
+    setInterval(function () {
+        if (moviesArr === JSON.parse(localStorage.getItem('savedMovies'))) {
+            clearInterval();
+        } else {
+            setMoviesArray(
+                JSON.parse(localStorage.getItem('savedMovies') || '[]')
+            );
+        }
+    }, 1000);
 
     return (
         <div className='card'>
@@ -45,26 +73,55 @@ const ResultsBox = (props) => {
                 {moviesArr
                     ? moviesArr.map((movie, index) => {
                           index = index + 1;
-                          return (
-                              <motion.li
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  transition={{ delay: 0.2 }}
-                                  key={movie.imdbID}
-                                  data-movie={movie.Title}
-                                  data-year={movie.Year}
-                                  data-index={index}
-                              >
-                                  {movie.Title + ' (' + movie.Year + ')'}
-                                  <button
+                          let movieString =
+                              movie.Title + ' (' + movie.Year + ')';
+
+                          if (
+                              localStorage
+                                  .getItem('savedMovies')
+                                  .includes(movieString)
+                          ) {
+                              return (
+                                  <li
                                       key={index}
-                                      className='btn btn-outline-primary'
-                                      onClick={saveToLocalStorage}
+                                      data-movie={movie.Title}
+                                      data-year={movie.Year}
+                                      data-index={index}
                                   >
-                                      Nominate
-                                  </button>
-                              </motion.li>
-                          );
+                                      {movie.Title + ' (' + movie.Year + ')'}
+                                      <button
+                                          data-movie={movie.Title}
+                                          data-year={movie.Year}
+                                          className='btn btn-outline-primary'
+                                          onClick={saveToLocalStorage}
+                                          id={index}
+                                          disabled
+                                      >
+                                          Nominate
+                                      </button>
+                                  </li>
+                              );
+                          } else {
+                              return (
+                                  <li
+                                      key={index}
+                                      data-movie={movie.Title}
+                                      data-year={movie.Year}
+                                      data-index={index}
+                                  >
+                                      {movie.Title + ' (' + movie.Year + ')'}
+                                      <button
+                                          data-movie={movie.Title}
+                                          data-year={movie.Year}
+                                          className='btn btn-outline-primary'
+                                          onClick={saveToLocalStorage}
+                                          id={index}
+                                      >
+                                          Nominate
+                                      </button>
+                                  </li>
+                              );
+                          }
                       })
                     : 'Please search for a movie!'}
             </ul>
