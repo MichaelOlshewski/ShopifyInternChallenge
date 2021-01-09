@@ -13,6 +13,7 @@ const ResultsBox = (props) => {
 
     let nominatedMovies = [];
 
+    // eslint-disable-next-line
     const [moviesArray, setMoviesArray] = useState([]);
 
     const saveToLocalStorage = (e) => {

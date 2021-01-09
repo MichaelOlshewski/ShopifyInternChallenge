@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { FaSearch } from 'react-icons/fa';
 import ResultsBox from './components/ResultsBox/ResultsBox.js';
@@ -27,6 +27,16 @@ const App = () => {
 
         setMovies(responseJson);
     };
+
+    const initializeStorage = () => {
+        if (!localStorage.getItem('savedMovies')) {
+            localStorage.setItem('savedMovies', '[]');
+        }
+    };
+
+    useEffect(() => {
+        initializeStorage();
+    });
 
     return (
         <div className='App'>
